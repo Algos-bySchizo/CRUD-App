@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:16
+    container_name: crud-postgres
+    environment:
+      POSTGRES_USER: bitches_beware67
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: crudapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bitches_beware67 -d crudapp"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  app:
+    build: .
+    container_name: crud-app
+    ports:
+      - "3000:3000"
+    depends_on:
+        db:
+          condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://bitches_beware67:${DB_PASSWORD}@db:5432/crudapp
+
+volumes:
+  pgdata:

@@ -1,7 +1,11 @@
-const fastify = require('fastify')({logger:true});
-fastify.register(require('./routes/users'))
+require('./models')
+
+fastify.register(require('./routes/users'));
+fastify.register(require('./routes/course'));
+fastify.register(require('./routes/batch'));
 
 const sequelize = require("./db");
+const fastify = require('fastify')({logger:true});
 
 
 fastify.get('/', async (request, reply) => {

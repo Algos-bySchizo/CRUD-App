@@ -1,24 +1,28 @@
-const User=require('../models/User')
+const { Course, Batch } = require('../models');
+const User=require('../models/User');
 
 async function userRoutes(fastify, options){
 
     fastify.post('/users', async(request, reply) =>{
         try{
-        const {name, email}=request.body;
+        const {name, email, batchId}=request.body;
         if (!name || !email) {
             return reply.code(400).send({ error: 'Name and email are required' });
         }
-        const user = await User.create({name, email});
+        const user = await User.create({name, email, batchId});
         return user;
     }catch(err){
         fastify.log.error(err)
         reply.code(500).send({error: 'Internal Server Error'});
     }
-    });
+        });
     
     fastify.get('/users', async(request, reply)=>{
         try{
-            const user = await User.findAll()
+            const user = await User.findAll({include:{
+                model:Course,
+                include:Batch
+            }})
             if (user.lenght===0){
                 return reply.code(204).send({message: 'the database is empty'});
             }
